@@ -76,6 +76,8 @@ def main():
                         help='Classes used for Train and Eval')
     parser.add_argument('--samples_per_class', type=int, default=50,
                         help='# Samples used for Test')
+    parser.add_argument('--batch_size_test', type=int, default=30,
+                        help='validation set input batch size')
 
     args = parser.parse_args()
 
@@ -87,6 +89,9 @@ def main():
     val_dataset = TinyImagnet_Val(root_dir=args.val_dir, transform=transform_test,
                         annotation_file=args.val_annotation_file, given_classes=args.classes,
                         samples_per_class=args.samples_per_class)
+    nw = 4 if torch.cuda.is_available() else 0
+    val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size_test,
+                                    num_workers=nw, shuffle=False)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     writer = SummaryWriter(log_dir="logs/")
