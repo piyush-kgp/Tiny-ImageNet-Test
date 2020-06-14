@@ -67,6 +67,7 @@ def test(val_dataloader, model, writer, device):
 
 def main():
     parser = argparse.ArgumentParser(description='Process args for Triplet Net Training')
+    parser.add_argument("--val_dir", type=str, help="Val directory",
                         default="/home/delta_one/Metric_Learning/tiny-imagenet-200/val")
     parser.add_argument("--val_annotation_file", type=str, help="Val Annotation File",
                         default="/home/delta_one/Metric_Learning/tiny-imagenet-200/val/val_annotations.txt")
