@@ -23,7 +23,7 @@ class Identity(nn.Module):
 
 
 class TinyImagnet_Val:
-    def __init__(self, root_dir, given_classes, samples_per_class, transform):
+    def __init__(self, root_dir, transform, annotation_file, given_classes, samples_per_class):
         self.root_dir = root_dir
         self.annotations = pd.read_csv(annotation_file,sep='\t',header=None,
                             names=['filename','label','tl_x','tl_y','br_x','br_y'])
@@ -74,6 +74,8 @@ def main():
     parser.add_argument('--classes', type=str, nargs='+', default=\
                         ['n01443537' 'n01629819' 'n01641577' 'n01644900' 'n01698640' 'n01742172' 'n01768244' 'n01770393' 'n01774384' 'n01774750'],
                         help='Classes used for Train and Eval')
+    parser.add_argument('--samples_per_class', type=int, default=50,
+                        help='# Samples used for Test')
 
     args = parser.parse_args()
 
@@ -83,7 +85,8 @@ def main():
             ])
 
     val_dataset = TinyImagnet_Val(root_dir=args.val_dir, transform=transform_test,
-                        annotation_file=args.val_annotation_file, given_classes=args.classes)
+                        annotation_file=args.val_annotation_file, given_classes=args.classes,
+                        samples_per_class=args.samples_per_class)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     writer = SummaryWriter(log_dir="logs/")
