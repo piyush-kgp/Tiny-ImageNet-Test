@@ -29,6 +29,7 @@ class TinyImagnet_Val:
                             names=['filename','label','tl_x','tl_y','br_x','br_y'])
         self.annotations = self.annotations[self.annotations.label.isin(given_classes)]
         self.transform = transform
+        self.given_classes = given_classes
 
     def __getitem__(self,index):
         filename, label, tl_x, tl_y, br_x, br_y =  self.annotations.iloc[index]
