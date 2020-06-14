@@ -100,6 +100,7 @@ def main():
     model.fc = Identity()
     model = model.to(device)
 
+    model.eval()
     test(val_dataloader, model, writer, device)
 
 if __name__=="__main__":
