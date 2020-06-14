@@ -72,7 +72,7 @@ def main():
     parser.add_argument("--val_annotation_file", type=str, help="Val Annotation File",
                         default="/home/delta_one/Metric_Learning/tiny-imagenet-200/val/val_annotations.txt")
     parser.add_argument('--classes', type=str, nargs='+', default=\
-                        ['n01443537' 'n01629819' 'n01641577' 'n01644900' 'n01698640' 'n01742172' 'n01768244' 'n01770393' 'n01774384' 'n01774750'],
+                        ['n01443537', 'n01629819', 'n01641577', 'n01644900', 'n01698640', 'n01742172', 'n01768244', 'n01770393', 'n01774384', 'n01774750'],
                         help='Classes used for Train and Eval')
     parser.add_argument('--samples_per_class', type=int, default=50,
                         help='# Samples used for Test')
