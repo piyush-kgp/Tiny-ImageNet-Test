@@ -74,10 +74,14 @@ def main():
     parser.add_argument('--classes', type=str, nargs='+', default=\
                         ['n01443537' 'n01629819' 'n01641577' 'n01644900' 'n01698640' 'n01742172' 'n01768244' 'n01770393' 'n01774384' 'n01774750'],
                         help='Classes used for Train and Eval')
+
+    args = parser.parse_args()
+
     transform_test = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])
+
     val_dataset = TinyImagnet_Val(root_dir=args.val_dir, transform=transform_test,
                         annotation_file=args.val_annotation_file, given_classes=args.classes)
 
