@@ -40,30 +40,35 @@ class TinyImagnet_Val:
         return self.annotations.shape[0]
 
 
-def test(val_dataloader, model, writer, device):
-    embeddings, labels = [], []
-    for i, batch in enumerate(val_dataloader):
-        imgs, lbls = batch
-        imgs = imgs.float().to(device)
-        emb = model(imgs)
-        embeddings.append(emb.cpu().detach().numpy())
-        labels.extend(lbls)
+def test(val_dataloader, model_dict, writer, device):
+    for name, model in model_dict.items():
+        model.fc = Identity()
+        model = model.to(device)
+        model.eval()
 
-    embeddings = np.concatenate(embeddings)
-    labels = np.asarray(labels)
-    label_set = np.asarray(val_dataloader.dataset.given_classes)
-    label_indices = np.asarray([np.where(label_set==l) for l in labels])[:,0,0]
+        embeddings, labels = [], []
+        for i, batch in enumerate(val_dataloader):
+            imgs, lbls = batch
+            imgs = imgs.float().to(device)
+            emb = model(imgs)
+            embeddings.append(emb.cpu().detach().numpy())
+            labels.extend(lbls)
 
-    embeddings_tsne = TSNE(n_components=2).fit_transform(embeddings)
+        embeddings = np.concatenate(embeddings)
+        labels = np.asarray(labels)
+        label_set = np.asarray(val_dataloader.dataset.given_classes)
+        label_indices = np.asarray([np.where(label_set==l) for l in labels])[:,0,0]
 
-    plt.figure(figsize=(10,8))
-    for i, label in enumerate(label_set):
-        indices, = np.where(label_indices==i)
-        xs, ys = embeddings_tsne[indices].T
-        plt.scatter(xs, ys, label=label)
-    plt.legend()
-    plt.savefig("TIN_VAL_TSNE_plot.png")
-    plt.close()
+        embeddings_tsne = TSNE(n_components=2).fit_transform(embeddings)
+
+        plt.figure(figsize=(10,8))
+        for i, label in enumerate(label_set):
+            indices, = np.where(label_indices==i)
+            xs, ys = embeddings_tsne[indices].T
+            plt.scatter(xs, ys, label=label)
+        plt.legend()
+        plt.savefig("TIN_VAL_TSNE_plot_{}.png".format(name))
+        plt.close()
 
 
 def main():
@@ -96,12 +101,21 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     writer = SummaryWriter(log_dir="logs/")
-    model = models.resnet101(pretrained=True)
-    model.fc = Identity()
-    model = model.to(device)
 
-    model.eval()
-    test(val_dataloader, model, writer, device)
+    model_dict = {
+        "AlexNet": models.alexnet(pretrained=True),
+        "DenseNet": models.densenet121(pretrained=True),
+        "MNASNet": models.mnasnet0_5(pretrained=True),
+        "MobileNetV2": models.mobilenet_v2(pretrained=True),
+        "ResNet18": models.resnet18(pretrained=True),
+        "ResNet101": models.resnet101(pretrained=True),
+        "ShuffleNet": models.shufflenet_v2_x0_5(pretrained=True),
+        "SqueezeNet": models.squeezenet1_0(pretrained=True),
+        "VGG19": models.vgg19(pretrained=True)
+        }
+
+    test(val_dataloader, model_dict, writer, device)
+
 
 if __name__=="__main__":
     main()
