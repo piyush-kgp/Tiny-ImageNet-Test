@@ -57,17 +57,16 @@ def test(val_dataloader, model_dict, writer, device):
         embeddings = np.concatenate(embeddings)
         labels = np.asarray(labels)
         label_set = np.asarray(val_dataloader.dataset.given_classes)
-        label_indices = np.asarray([np.where(label_set==l) for l in labels])[:,0,0]
 
         embeddings_tsne = TSNE(n_components=2).fit_transform(embeddings)
 
         plt.figure(figsize=(10,8))
-        for i, label in enumerate(label_set):
-            indices, = np.where(label_indices==i)
+        for label in label_set:
+            indices, = np.where(labels==label)
             xs, ys = embeddings_tsne[indices].T
             plt.scatter(xs, ys, label=label)
         plt.legend()
-        plt.savefig("TIN_VAL_TSNE_plot_{}.png".format(name))
+        plt.savefig("plots/TIN_VAL_TSNE_plot_{}.png".format(name))
         plt.close()
 
 
